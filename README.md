@@ -1,51 +1,122 @@
-# DBA Challenge 20240802
+# Título: Desafio Bike Stores Inc
 
+## Descrição
+Este projeto tem como objetivo ajudar a Bike Stores Inc a obter informações valiosas sobre seus clientes, produtos e vendas. Usando dados sobre clientes, vendas, estoque e funcionários.
 
-## Introdução
+## Tecnologias
+ - Banco de dados: Postgres.
+ - SQL.
 
-Nesse desafio trabalharemos utilizando a base de dados da empresa Bike Stores Inc com o objetivo de obter métricas relevantes para equipe de Marketing e Comercial.
+## Instruções de Instalação e Uso (tópico gerado por IA):
 
-Com isso, teremos que trabalhar com várioas consultas utilizando conceitos como `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `GROUP BY` e `COUNT`.
+Instruções de Instalação e Uso do PostgreSQL no PgAdmin
+Para realizar as consultas do projeto utilizando o PostgreSQL no PgAdmin, siga os passos abaixo:
 
-### Antes de começar
- 
-- O projeto deve utilizar a Linguagem específica na avaliação. Por exempo: SQL, T-SQL, PL/SQL e PSQL;
-- Considere como deadline da avaliação a partir do início do teste. Caso tenha sido convidado a realizar o teste e não seja possível concluir dentro deste período, avise a pessoa que o convidou para receber instruções sobre o que fazer.
-- Documentar todo o processo de investigação para o desenvolvimento da atividade (README.md no seu repositório); os resultados destas tarefas são tão importantes do que o seu processo de pensamento e decisões à medida que as completa, por isso tente documentar e apresentar os seus hipóteses e decisões na medida do possível.
- 
- 
+#### 1. Instalação do PostgreSQL e PgAdmin
+Baixar e instalar o PostgreSQL:
 
-## O projeto
+Acesse o site oficial do PostgreSQL: https://www.postgresql.org/download/
+Selecione a versão correspondente ao seu sistema operacional e siga as instruções para instalação.
+Durante a instalação, defina uma senha para o superusuário (usuário postgres) e anote-a.
+Baixar e instalar o PgAdmin:
 
-- Criar as consultas utilizando a linguagem escolhida;
-- Entregar o código gerado do Teste.
+O PgAdmin é uma interface gráfica para gerenciar o PostgreSQL. Normalmente, ele é instalado automaticamente junto com o PostgreSQL, mas caso precise de uma instalação separada, baixe o PgAdmin em: https://www.pgadmin.org/download/.
+Siga as instruções de instalação para o seu sistema operacional.
 
-### Modelo de Dados:
+#### 2. Conectando-se ao PostgreSQL no PgAdmin
+Abrir o PgAdmin:
 
-Para entender o modelo, revisar o diagrama a seguir:
+Após a instalação, abra o PgAdmin.
+Na tela inicial, você verá a opção de conectar ao servidor PostgreSQL.
+Conectar ao servidor PostgreSQL:
 
-![<img src="samples/model.png" height="500" alt="Modelo" title="Modelo"/>](samples/model.png)
+Clique com o botão direito em "Servers" no painel à esquerda e escolha "Create" > "Server".
+Na janela "Create - Server", insira as seguintes informações:
+Name: Dê um nome para o seu servidor (por exemplo, PostgreSQL).
+Connection:
+Host name/address: localhost (se o PostgreSQL estiver instalado localmente).
+Port: 5432 (porta padrão do PostgreSQL).
+Username: postgres (usuário padrão).
+Password: A senha que você definiu durante a instalação.
+Clique em "Save" para salvar a conexão.
+Acessando a base de dados:
 
+Após a conexão, expanda o servidor na barra lateral do PgAdmin.
+Encontre a base de dados onde você deseja realizar as consultas. Caso ainda não tenha a base de dados, você pode criar uma nova clicando com o botão direito em "Databases" > "Create" > "Database".
+#### 3. Criando e Executando Consultas no PgAdmin
+Abrir o Query Tool:
+
+Selecione o banco de dados onde você irá trabalhar.
+No painel superior, clique em "Query Tool" para abrir a ferramenta de consultas.
+Escrever e Executar as Consultas:
+
+Na janela do Query Tool, escreva as consultas SQL que você deseja executar.
+Clique no botão Executar (ícone de raio) ou pressione F5 para executar a consulta.
+Visualizar os Resultados:
+
+Após executar uma consulta, os resultados serão exibidos na parte inferior da tela.
+Você pode salvar os resultados ou exportá-los em diferentes formatos (CSV, Excel, etc.).
+#### 4. Finalizando a Sessão
+Após finalizar suas consultas, você pode desconectar o PgAdmin clicando com o botão direito no servidor e selecionando "Disconnect" ou simplesmente fechando o PgAdmin.
+Agora você está pronto para realizar as consultas necessárias e trabalhar com o PostgreSQL no PgAdmin! Se precisar de mais ajuda, a documentação oficial do PostgreSQL e PgAdmin oferece informações detalhadas sobre o uso do sistema.
 
 ## Selects
 
-Construir as seguintes consultas:
+- Listar todos Clientes que não tenham realizado uma compra
+  ```
+  select 
+   c.customer_id, 
+   c.fisrt_name, 
+   c.last_name 
+  from
+	  Sales.customers c
+	   left join Sales.orders o on c.customer_id = o.customer_id
+  where o.customer_id IS NULL
 
-- Listar todos Clientes que não tenham realizado uma compra;
 - Listar os Produtos que não tenham sido comprados
-- Listar os Produtos sem Estoque;
-- Agrupar a quantidade de vendas que uma determinada Marca por Loja. 
+  ```
+  select
+	  p.product_id,
+	  p.product_name
+  from
+	  Production.products p
+	   left join Sales.order_items oi on p.product_id = oi.product_id
+   where oi.product_id IS NULL;
+- Listar os Produtos sem Estoque
+  ```
+  select
+	  p.product_id,
+	  p.product_name
+  from
+	  Production.products p
+		  inner join Production.stocks s on p.product_id = s.product_id
+  where
+	 s.quantily = 0
+- Agrupar a quantidade de vendas que uma determinada Marca por Loja.
+  ```
+  select 
+	  b.brand_name, 
+	  st.store_name, 
+	  count(o.order_id) total_sales
+  from Production.brands b
+	  inner join Production.products p on b.brand_id = p.brand_id
+	  inner join Sales.order_items oi on p.product_id = oi.product_id
+	  inner join sales.orders o on oi.order_id = o.order_id
+	  inner join Sales.stores st on o.store_id = st.store_id
+  group by
+	  b.brand_name, 
+	  st.store_name;
 - Listar os Funcionarios que não estejam relacionados a um Pedido.
+  ```
+  select 
+   s.staff_id, 
+   s.fisrt_name, 
+   s.last_name 
+  from
+   Sales.staffs s
+    left join Sales.orders o on s.staff_id = o.staff_id
+  where o.staff_id IS NULL
 
-
-## Readme do Repositório
-
-- Deve conter o título do projeto
-- Uma descrição sobre o projeto em frase
-- Deve conter uma lista com linguagem, framework e/ou tecnologias usadas
-- Como instalar e usar o projeto (instruções)
-- Não esqueça o [.gitignore](https://www.toptal.com/developers/gitignore)
-- Se está usando github pessoal, referencie que é um challenge by coodesh:  
 
 >  This is a challenge by [Coodesh](https://coodesh.com/)
 
