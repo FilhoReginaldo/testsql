@@ -1,0 +1,27 @@
+# Ignore arquivos e pastas do sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar arquivos de logs
+*.log
+
+# Ignorar arquivos de banco de dados locais (PostgreSQL)
+*.sql
+*.sqlite
+
+# Ignorar arquivos de backup de editores de texto
+*~
+*.bak
+
+# Ignorar pastas específicas de IDEs
+.vscode/
+.idea/
+
+# Ignorar pastas e arquivos de dependências
+node_modules/
+
+# Ignorar arquivos de configurações específicas do sistema
+*.swp
+
+# Ignore arquivos de configuração do PgAdmin (se aplicável)
+pgadmin4/
